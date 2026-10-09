@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iPhone 0–50% charge time by charger wattage</title>
+<meta name="description" content="A small table and estimator for how long an iPhone takes to reach 50% on 5 W, 12 W, 20 W and 30 W chargers, and why going above 20 W barely helps.">
+<style>
+:root{--bg:#f3f5f9;--ink:#141a24;--mute:#5d6676;--line:#d9dfe9;--acc:#2a5bd7;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1118;--ink:#e3e8f1;--mute:#97a1b3;--line:#262d3a;--acc:#86a8ff;--card:#151a24}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+article{max-width:660px;margin:0 auto;padding:30px 16px 60px}
+h1{font-size:1.6rem;line-height:1.25;margin:0 0 6px}
+h2{font-size:1.05rem;margin:26px 0 6px}
+p.k{color:var(--mute);margin-top:0}
+a{color:var(--acc)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);font-size:15px}
+td,th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mute);font-weight:600}
+.box{background:var(--card);border:1px solid var(--line);padding:14px;margin-top:10px}
+.box label{display:block;color:var(--mute);font-size:14px;margin:6px 0 2px}
+.box select{font:inherit;padding:6px;width:100%;max-width:260px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+#est{font-weight:600;margin-top:10px}
+</style>
+</head>
+<body>
+<article>
+<h1>iPhone 0–50% charge time by charger wattage</h1>
+<p class="k">Apple quotes "up to 50% in about 30 minutes" with a 20 W or higher adapter. Here is what that looks like next to slower chargers, and why a bigger brick stops paying off.</p>
+
+<table>
+<tr><th>Charger</th><th>Approx. 0→50%</th><th>Approx. 0→100%</th></tr>
+<tr><td>5 W USB-A cube</td><td>~85 min</td><td>~3 h 15 min</td></tr>
+<tr><td>12 W USB-A (iPad)</td><td>~50 min</td><td>~2 h 20 min</td></tr>
+<tr><td>20 W USB-C PD</td><td>~30 min</td><td>~1 h 45 min</td></tr>
+<tr><td>30 W USB-C PD</td><td>~28 min</td><td>~1 h 40 min</td></tr>
+</table>
+<p class="k" style="font-size:14px;margin-top:6px">Rough figures for a recent non-Max iPhone at room temperature, phone idle. Apple's own claim is on its <a href="https://support.apple.com/en-us/102574">fast-charge support page</a>.</p>
+
+<h2>Estimate yours</h2>
+<div class="box">
+<label for="w">Charger</label>
+<select id="w"><option value="5">5 W</option><option value="12">12 W</option><option value="20" selected>20 W</option><option value="30">30 W</option></select>
+<label for="s">Starting charge</label>
+<select id="s"><option value="0">0%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="40">40%</option></select>
+<div id="est"></div>
+</div>
+
+<h2>Why 30 W is hardly faster than 20 W</h2>
+<p>Fast charging only happens in the constant-current stage of the <a href="https://en.wikipedia.org/wiki/Lithium-ion_battery#Charging">lithium-ion charge cycle</a>. The phone, not the charger, decides how much current it accepts, and an iPhone tops out a little above 20 W for a few minutes before heat and cell voltage pull it down. Past about 80% it switches to a slow constant-voltage finish no matter what is plugged in.</p>
+<p>The charger and phone agree on voltage through <a href="https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery">USB Power Delivery</a>, which needs a USB-C end on the charger side. On a Lightning iPhone that means a USB-C to Lightning cable — an <a href="https://cairovolt.com/en/anker/cables/anker-powerline-usb-c-lightning">anker powerline usb-c to lightning</a> or Apple's own both work; the old USB-A to Lightning lead caps you at the 12 W row above.</p>
+<p>Heat matters more than wattage: a phone charging under a pillow or in a hot car will throttle well below these numbers (<a href="https://batteryuniversity.com/article/bu-410-charging-at-high-and-low-temperatures">Battery University on charging temperature</a>).</p>
+</article>
+<script>
+const rate={5:0.6,12:1.0,20:1.67,30:1.8}; // % per minute in the fast phase (0-50%)
+function upd(){
+  const w=+document.getElementById('w').value,s=+document.getElementById('s').value;
+  const m=Math.round((50-s)/rate[w]);
+  document.getElementById('est').textContent=`About ${m} minutes from ${s}% to 50% on a ${w} W charger.`;
+}
+document.getElementById('w').onchange=upd;document.getElementById('s').onchange=upd;upd();
+</script>
+</body>
+</html>
